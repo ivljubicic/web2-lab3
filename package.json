@@ -31,6 +31,7 @@
   "type": "module",
   "module": "index.ts",
   "dependencies": {
+    "@sveltejs/adapter-vercel": "^3.1.0",
     "daisyui": "latest"
   }
 }
