@@ -59,12 +59,24 @@
 	const bulletSpeed = 5;
 
 	function createAsteroid(): Asteroid {
+		let newX, newY, distance;
+		const safeDistance = 100; // Safe distance from the player
+
+		do {
+			newX = Math.random() * canvas.width;
+			newY = Math.random() * canvas.height;
+
+			let dx = newX - ship.x;
+			let dy = newY - ship.y;
+			distance = Math.sqrt(dx * dx + dy * dy);
+		} while (distance < safeDistance);
+
 		return {
-			x: Math.random() * canvas.width,
-			y: Math.random() * canvas.height,
+			x: newX,
+			y: newY,
 			size: 50 + Math.random() * 30,
-			xVel: (Math.random() - 0.5) * 2,
-			yVel: (Math.random() - 0.5) * 2,
+			xVel: (Math.random() - 0.5) * 3,
+			yVel: (Math.random() - 0.5) * 3,
 			color: getRandomGray()
 		};
 	}
@@ -100,6 +112,7 @@
 
 			// You might need to redraw or reposition game elements here
 		};
+		spawnAsteroid();
 
 		window.addEventListener('resize', resizeCanvas);
 
@@ -127,11 +140,11 @@
 		if (keys.left) ship.angle -= 0.05;
 		if (keys.right) ship.angle += 0.05;
 
+		if (keys.left || keys.right || keys.up || keys.down) {
+			playerHasMoved = true;
+		}
+
 		if (keys.up) {
-			if (!playerHasMoved) {
-				lastRespawn = Date.now();
-				playerHasMoved = true;
-			}
 			ship.thrust = 2;
 		} else {
 			ship.thrust = 0;
@@ -159,6 +172,14 @@
 		ctx.closePath();
 		ctx.stroke();
 		ctx.restore();
+	}
+
+	function spawnAsteroid() {
+		if (playerHasMoved) {
+			asteroids.push(createAsteroid());
+		}
+		const nextSpawnTime = Math.random() * (5000 - 2000) + 2000; // Time in milliseconds
+		setTimeout(spawnAsteroid, nextSpawnTime);
 	}
 
 	function getRandomGray(): string {
